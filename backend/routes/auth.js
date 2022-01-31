@@ -10,12 +10,14 @@ const fetchuser = require('../middleware/fetchuser')
 const JWT_SECRET = "qwerty";
 
 
-router.post('/', [
+router.post('/signup', [
     body('name', 'enter a valid name').isLength({ min: 3 }),
     body('email', 'enter a valid email').isEmail(),
     body('password').isLength({ min: 5 })
 
 ], async (req, res) => {
+
+    let success = false;
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -28,7 +30,7 @@ router.post('/', [
 
         let user = await User.findOne({ email: req.body.email });
         if (user) {
-            return res.status(400).json({ error: "user already exists" })
+            return res.status(400).json({success, error: "user already exists" })
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -49,21 +51,13 @@ router.post('/', [
 
         const authToken = jwt.sign(data, JWT_SECRET);
 
-
-        res.json({ authToken })
+        success = true;
+        res.json({success, authToken })
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("some error occured");
+        res.status(500).send(success,"some error occured");
     }
 
-    //   .then(user => res.json(user))
-    //   .catch((err)=>{
-    //       console.log(err);
-    //       res.json({
-    //           message: "pls send uniqe email",
-    //           error:err.message
-    //       })
-    //   });
 })
 
 
@@ -86,14 +80,16 @@ router.post('/login', [
     try {
         let user = await User.findOne({ email });
         if (!user) {
+            success = false;
             return res.status(400).json({ error: "pls try with correct credentials" });
 
         }
 
-        const passwordcompare =await bcrypt.compare(password, user.password);
+        const passwordcompare = await bcrypt.compare(password, user.password);
 
         if (!passwordcompare) {
-            return res.status(400).json({ error: "pls try with correct password" });
+            success = false;
+            return res.status(400).json({success, error: "pls try with correct password" });
 
         }
 
@@ -104,13 +100,13 @@ router.post('/login', [
         }
 
         const authToken = jwt.sign(data, JWT_SECRET);
-
-        res.json({authToken});
+        success = true;
+        res.json({success, authToken });
 
 
     } catch (error) {
         console.error(error.message);
-        res.status(500).json({error:"something went wrong "});
+        res.status(500).json({ error: "something went wrong " });
     }
 
 
@@ -119,11 +115,11 @@ router.post('/login', [
 
 // get logged in details using : post "/api/auth/getuser"   login required
 
-router.post('/getuser',fetchuser, async (req, res) => {
+router.post('/getuser', fetchuser, async (req, res) => {
 
     try {
         userId = req.user.id
-        const user = await User.findOne({userId}).select("-password");
+        const user = await User.findOne({ userId }).select("-password");
         res.send(user)
 
     } catch (error) {

@@ -9,6 +9,8 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import About from './components/About';
 import NoteState from './context/notes/NoteState';
+import { Login } from './components/Login';
+import { Signup } from './components/Signup';
 
 function App() {
   return (
@@ -22,6 +24,12 @@ function App() {
             </Route>
             <Route exact path="/About">
               <About />
+            </Route>
+            <Route exact path="/login">
+              <Login />
+            </Route>
+            <Route exact path="/signup">
+              <Signup />
             </Route>
 
           </Switch>

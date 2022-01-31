@@ -12,7 +12,7 @@ export default function NoteItem(props) {
         <div className='col-md-3 d-inline my-2'>
             <div className="card" >
                 <div className="card-body">
-                    <h5 className="card-title">{note.title} <button type="button" className="btn btn-outline-info btn-sm">{note.tag}</button></h5>
+                    <h5 className="card-title">{note.title} <button type="button" className={`btn btn-outline-info btn-sm ${note.tag.length===0 ? "d-none" :""}`}>{note.tag}</button></h5>
                     <p className="card-text">{note.description}</p>
                     <div className="temp">
                     <p className="card-text d-inline">{note.date.substring(0, 10)}</p>

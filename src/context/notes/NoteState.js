@@ -51,19 +51,13 @@ const NoteState = (props) => {
             },
             body: JSON.stringify({title,description,tag})
         });
+
+        const json = await response.json();
        
 
 
         console.log("adding a new note");
-        const note = {
-            "_id": "61f577e9e9b8988ad2ca3ae2",
-            "user": "61f3a0bf8b9cf782cf9365a3",
-            "title": title,
-            "description": description,
-            "tag": tag,
-            "date": "2022-01-29T17:22:49.136Z",
-            "__v": 0
-        }
+        const note = json;
 
         setnotes(notes.concat(note))
     }
@@ -88,18 +82,21 @@ const NoteState = (props) => {
         });
         const json = response.json();
 
+        let newNotes = JSON.parse(JSON.stringify(notes))
 
+        for (let index = 0; index < newNotes.length; index++) {
+            const element = newNotes[index];
+            if (element._id === id){
 
-        for (let index = 0; index < notes.length; index++) {
-            const element = notes[index];
-            if (element._id === id)
-                element.title = title;
-            element.description = description;
-            element.tag = tag;
+                newNotes[index].title = title;
+                newNotes[index].description = description;
+                newNotes[index].tag = tag;
+                break;
+            }
 
 
         }
-
+        setnotes(newNotes);
     }
 
 
