@@ -32,10 +32,11 @@ export const Signup = () => {
 
     });
     const json = await response.json();
-    console.log(json);
+    console.log("second :", json.success, json.authToken)
     if (json.success) {
       //redirect
-      localStorage.setItem('token', json.authtoken);
+      localStorage.setItem('token', json.authToken);
+      console.log(json.authToken)
       history.push("/");
     }
     else {

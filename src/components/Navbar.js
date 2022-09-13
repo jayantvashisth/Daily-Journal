@@ -1,14 +1,20 @@
-import React,{useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { Link } from "react-router-dom";
-import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
+import { useLocation, useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 
 
 export default function Navbar() {
     let location = useLocation();
+    let history = useHistory();
     useEffect(() => {
         console.log(location.pathname)
     }, [location]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        history.push('/login')
+    }
 
 
     return <div>
@@ -21,18 +27,20 @@ export default function Navbar() {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <Link className={`nav-link ${location.pathname==="/" ?"active" :""}`} aria-current="page" to="/">Home</Link>
+                            <Link className={`nav-link ${location.pathname === "/" ? "active" : ""}`} aria-current="page" to="/">Home</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className={`nav-link ${location.pathname==="/about" ?"active" :""}`} to="/about">About</Link>
+                            <Link className={`nav-link ${location.pathname === "/about" ? "active" : ""}`} to="/about">About</Link>
                         </li>
 
 
                     </ul>
-                    <form className="d-flex">
-                        <Link button className="btn btn-primary mx-1" to="/login" type="button">Login</Link>
-                        <Link button className="btn btn-primary mx-1" to="/signup" type="button">Signup</Link>
-                    </form>
+                    {!localStorage.getItem('token') ? <form className="d-flex">
+                        <Link className="btn btn-primary mx-2" to="/login" role="button">Login</Link>
+                        <Link className="btn btn-primary mx-2" to="/signup" role="button">Signup</Link>
+                    </form> : <form className="d-flex">
+                        <button className="btn btn-primary mx-2" onClick={handleLogout}>Logout</button>
+                    </form>}
                 </div>
             </div>
         </nav>

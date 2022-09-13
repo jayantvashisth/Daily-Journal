@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const { body, validationResult } = require('express-validator');
-const { findOne } = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const fetchuser = require('../middleware/fetchuser')
 
 const JWT_SECRET = "qwerty";
 
+// Route for signup a new account
 
 router.post('/signup', [
     body('name', 'enter a valid name').isLength({ min: 3 }),
@@ -26,18 +26,16 @@ router.post('/signup', [
 
     try {
 
-
-
-        let user = await User.findOne({ email: req.body.email });
+        let user = await User.findOne({ email: req.body.email }); //findOne is used to find a given parameter inside the database
         if (user) {
-            return res.status(400).json({success, error: "user already exists" })
+            return res.status(400).json({ success, error: "user already exists" })
         }
 
+        // Code to hash our password
         const salt = await bcrypt.genSalt(10);
         const secPass = await bcrypt.hash(req.body.password, salt);
 
-
-        user = await User.create({
+        user = await User.create({  //This will create a new user in the database
             name: req.body.name,
             password: secPass,
             email: req.body.email
@@ -49,17 +47,17 @@ router.post('/signup', [
             }
         }
 
+        //this is for authentication
         const authToken = jwt.sign(data, JWT_SECRET);
 
         success = true;
-        res.json({success, authToken })
+        res.json({ success, authToken })
     } catch (error) {
         console.error(error.message);
-        res.status(500).send(success,"some error occured");
+        res.status(500).send(success, "some error occured");
     }
 
 })
-
 
 // authenticate a user using :post "api/auth/login", no login required
 
@@ -89,7 +87,7 @@ router.post('/login', [
 
         if (!passwordcompare) {
             success = false;
-            return res.status(400).json({success, error: "pls try with correct password" });
+            return res.status(400).json({ success, error: "pls try with correct password" });
 
         }
 
@@ -100,8 +98,9 @@ router.post('/login', [
         }
 
         const authToken = jwt.sign(data, JWT_SECRET);
+
         success = true;
-        res.json({success, authToken });
+        res.json({ success, authToken });
 
 
     } catch (error) {
@@ -118,9 +117,9 @@ router.post('/login', [
 router.post('/getuser', fetchuser, async (req, res) => {
 
     try {
-        userId = req.user.id
-        const user = await User.findOne({ userId }).select("-password");
-        res.send(user)
+        let userId = req.user.id
+        const _user = await User.findOne({ _id: userId }).select("-password");
+        res.send(_user)
 
     } catch (error) {
         console.error(error.messsage);

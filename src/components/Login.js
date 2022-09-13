@@ -31,10 +31,11 @@ export const Login = () => {
 
         });
         const json = await response.json();
-        console.log(json);
+        // console.log(json);
+        console.log("first :", json.success, json.authToken)
         if (json.success) {
             //redirect
-            localStorage.setItem('token', json.authtoken);
+            localStorage.setItem('token', json.authToken);
             history.push("/");
         }
         else {

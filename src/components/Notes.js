@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef,useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import noteContext from '../context/notes/noteContext'
 import AddNote from './AddNote';
 import NoteItem from './NoteItem';
@@ -7,11 +8,20 @@ import NoteItem from './NoteItem';
 export default function Notes() {
     const context = useContext(noteContext);
     const { notes, setnotes, addNote, getNote,editNote } = context;
-
+    
+    let history = useHistory();
+    
     useEffect(() => {
-        getNote()
+        // console.log(LocalStorage.getItem('token'))
+        if(localStorage.getItem('token')){
+            getNote()
+        }
+        else{
+            history.push('/signup')
+        }
         // eslint-disable-next-line
     }, [])
+    
     const ref = useRef(null)
     const refClose = useRef(null)
     const [note, setNote] = useState({ id: "", etitle: "", edescription: "", etag: "" })
@@ -29,7 +39,7 @@ export default function Notes() {
     const onChange = (e) => {
         setNote({ ...note, [e.target.name]: e.target.value })
     }
-
+    console.log(notes.length)
 
     return (
         <>
@@ -76,8 +86,8 @@ export default function Notes() {
                 <div className="row my-3">
                     <h2 className='container'>Your notes</h2>
                     <div className="container">{notes.length===0 && "No notes to display"}</div>
-                    {notes.map((notes) => {
-                        return <NoteItem key={notes._id} note={notes} updateNote={updateNote} />
+                    {notes.map((note) => {
+                        return <NoteItem key={note._id} note={note} updateNote={updateNote} />
                     })}
                 </div>
             </div>
